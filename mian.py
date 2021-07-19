@@ -12,7 +12,7 @@ THEME = "邮件主题"
 ##############################配置###############################
 FROM = ''        #发送者邮箱
 PASSWORD = ''    #邮箱授权密码
-TO = 'gir'        #接收者邮箱
+TO = ''        #接收者邮箱
 HOST = 'smtp.163.com'            #SMTP服务器
 PORT = '465'                     #SMTP服务器SSL端口
 #################################################################
@@ -20,11 +20,15 @@ PORT = '465'                     #SMTP服务器SSL端口
 
 #############################代码区###############################
 def sent_email(theme,context): 
-    smtp_obj = smtplib.SMTP_SSL(HOST)
-    smtp_obj.connect(HOST, port=PORT)
-    res_smtp = smtp_obj.login(user=FROM, password=PASSWORD)
-    msg = '\n'.join(['From: {}'.format(FROM), 'To: {}'.format(TO), 'Subject: {}'.format(theme), '', context])
-    smtp_obj.sendmail(from_addr=FROM, to_addrs=TO, msg=msg.encode('utf-8'))
+    try:
+        smtpObj = smtplib.SMTP_SSL(HOST, PORT)
+        smtpObj.login(FROM, PASSWORD)
+        msg = '\n'.join(['From: {}'.format(FROM), 'To: {}'.format(TO), 'Subject: {}'.format(theme), '', context])
+        smtpObj.sendmail(FROM, TO, msg=msg.encode('utf-8'))
+        print("邮件发送成功")
+
+    except smtplib.SMTPException:
+        print("Error: 无法发送邮件")
 
 sent_email(theme=THEME,context=CONTEXT)
 
